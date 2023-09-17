@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-$h8v3m%uo6q)xs4i%l2m=o$d29$o7(7@yc=cn3x#_+c(uy&_k(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '175.214.76.85']
+ALLOWED_HOSTS = ['175.214.76.85', 'hirating.kro.kr']
 
 
 # Application definition
@@ -126,5 +126,5 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRONJOBS = [
-    ('*/2 * * * *', 'ranking.RatingUpdate')
+    ('* * * * *', 'ranking.cron.RatingUpdate', '>> /tmp/log/cron.log')
 ]
