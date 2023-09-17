@@ -4,7 +4,7 @@ import datetime
 import math
 import json
 import time
-import ranking.ValidHanles
+import ranking.ValidHandles
 
 
 
@@ -12,7 +12,7 @@ def RatingUpdate():
     print(datetime.datetime.now(), 'Rating Update Start')
     r = requests.get('https://solved.ac/api/v3/ranking/in_organization?page=1&organizationId=436')
     data = r.json()
-    validhandles = ranking.ValidHanles.Handles.split('\n')
+    validhandles = ranking.ValidHandles.Handles.split('\n')
     cnt = data['count']
     page = math.ceil(cnt/50)
     for i in range(1, page+1):
