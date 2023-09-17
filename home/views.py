@@ -6,7 +6,7 @@ import time
 import random
 
 import ranking.cron
-import ranking.ValidHanles
+import ranking.ValidHandles
 
 def killAllDB():
     Users = RatedUser.objects.all()
@@ -17,7 +17,7 @@ def killAllDB():
 def CreateDBbysolved():
     r = requests.get('https://solved.ac/api/v3/ranking/in_organization?page=1&organizationId=436')
     data = r.json()
-    validhandles = ranking.ValidHanles.Handles.split('\n')
+    validhandles = ranking.ValidHandles.Handles.split('\n')
     cnt = data['count']
     page = math.ceil(cnt/50)
     for i in range(1, page+1):
