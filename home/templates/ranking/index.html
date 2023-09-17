@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+{% csrf_token %}
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>HI-ARC 레이팅 이벤트</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+
+        height: 35px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+
+        color: black;
+        background: #ffffff;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        font-family: 'Noto Sans KR', sans-serif;
+        margin-bottom: 20px; /* 메뉴바 아래 여백 추가 */
+        z-index: 1; /* 다른 요소 위에 표시 */
+        border-bottom: 1px solid #ddd; /* 하단 구분선 추가 */
+    }
+
+    /* 왼쪽 텍스트 스타일 */
+    .left {
+        font-size: 20px; /* 원하는 크기로 조정하세요 */
+        padding-left: 60px;
+    }
+
+    .left a {
+        text-decoration: none;
+        color: black;
+        font-weight: bold;
+        transition: color 0.3s; /* color 속성에만 transition 추가 */
+    }
+
+    .left a:hover {
+        color: #333; /* 호버 효과 스타일 설정 */
+    }
+
+    /* 오른쪽 메뉴 스타일 */
+    .right ul {
+        list-style: none;
+        padding: 0;
+        margin-right: 40px;
+        display: flex;
+    }
+
+    .right li {
+        margin-right: 20px; /* 각 메뉴 항목 사이의 간격 조정 */
+    }
+
+    .right a {
+        text-decoration: none;
+        color: black;
+        font-weight: bold;
+        transition: color 0.3s; /* color 속성에만 transition 추가 */
+    }
+
+    .right a:hover {
+        color: #333; /* 호버 효과 스타일 설정 */
+    }
+
+    /* 추가한 메뉴 스타일 */
+    .menu-bar {
+        position: relative;
+        margin-top: 70px;
+        background-color: #fff;
+        padding-top: 15px;
+        padding-left: 60px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+        font-size: 0;
+        display: flex;
+    }
+
+    .menu-item {
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+        font-size: 14px;
+        margin-right: 20px;
+    }
+
+    .title{
+        position: relative;
+        padding-top: 40px;
+        padding-left: 60px;
+        padding-bottom: 40px;
+        border-bottom: 1px solid #ddd;
+        background-color: #cccccc;
+        font-size: 30px;
+        font-weight: bold;
+    }
+
+    .ranking-table {
+        border-collapse: collapse;
+        width: calc(100% - 120px);
+        margin-top: 20px;
+        margin-left: 60px;
+        margin-right: 60px;
+    }
+
+    .ranking-table th, .ranking-table td {
+        border-bottom: 1px solid #ddd; /* 맨 위 행에만 구분선 추가 */
+        padding: 8px;
+        text-align: center;
+        height: 20px;
+    }
+
+    .ranking-table td a {
+        text-decoration: none;
+    }
+
+    .ranking-table th:first-child,
+    .ranking-table td:first-child {
+        text-align: right;
+        font-weight: bold;
+    }
+
+    .ranking-table td:nth-child(1){
+        width: 40px;
+    }
+    .ranking-table td:nth-child(2){
+        width: 400px;
+    }
+    
+    .ranking-table td:nth-child(2),
+    .ranking-table td:nth-child(5) {
+        font-weight: bold;
+    }
+
+    .ranking-table th {
+        background-color: transparent; /* 배경색 제거 */
+        color: black; /* 텍스트 색상 변경 */
+    }
+
+    .ranking-table th, .ranking-table td {
+        vertical-align: middle; /* 셀 내부 컨텐츠 수직 가운데 정렬 */
+    }
+
+    .ranking-table tr:nth-child(odd) {
+        background-color: transparent; /* 홀수 행 배경색 제거 */
+    }
+
+    .ranking-table tr:nth-child(even) {
+        background-color: transparent; /* 짝수 행 배경색 제거 */
+    }
+
+</style>
+
+<header>
+    <div class="left">
+        <a href="/home/">HI-ARC 이벤트 페이지</a>
+    </div>
+    <div class="right">
+        <ul>
+            <li><a href="/ranking/">랭킹</a></li>
+        </ul>
+    </div>
+</header>
+
+<!-- 추가한 메뉴 -->
+<div class="menu-bar">
+    <a href="/ranking/div1" class="menu-item">div.1</a>
+    <a href="/ranking/div2" class="menu-item">div.2</a>
+    <a href="/ranking/div3" class="menu-item">div.3</a>
+</div>
+
+<div class="title">
+    div.{{div}} 랭킹
+</div>
+
+<table class="ranking-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>이름</th>
+            <th>시즌 시작 레이팅</th>
+            <th>현재 레이팅</th>
+            <th>변화량</th>
+        </tr>
+    </thead>
+    {% for user in ranking %}
+    <tbody>
+        <tr>
+            <td><font style="color:{{user.rankcolor}}">{{user.rank}}</font></td>
+            <td><a href="https://solved.ac/profile/{{user.username}}"><font style="color:{{user.color}}">{{user.username}}</font></a></td>
+            <td>{{user.seasonStartRating}}</td>
+            <td>{{user.userrating}}</td>
+            <td>+{{user.change}}</td>
+        </tr>
+        <!-- 다른 랭킹 항목 추가 -->
+    </tbody>
+    {% endfor %}
+</table>
+
+</html>

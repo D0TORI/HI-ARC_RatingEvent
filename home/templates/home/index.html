@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+{% csrf_token %}
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>HI-ARC 레이팅 이벤트</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+</head>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+
+        height: 35px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+
+        color: black;
+        background: #ffffff;
+        font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        font-family: 'Noto Sans KR', sans-serif;
+        margin-bottom: 20px; /* 메뉴바 아래 여백 추가 */
+        z-index: 1; /* 다른 요소 위에 표시 */
+        border-bottom: 1px solid #ddd; /* 하단 구분선 추가 */
+    }
+
+    /* 왼쪽 텍스트 스타일 */
+    .left {
+        font-size: 20px; /* 원하는 크기로 조정하세요 */
+        padding-left: 60px;
+    }
+
+    .left a {
+        text-decoration: none;
+        color: black;
+        font-weight: bold;
+        transition: color 0.3s; /* color 속성에만 transition 추가 */
+    }
+
+    .left a:hover {
+        color: #333; /* 호버 효과 스타일 설정 */
+    }
+
+    /* 오른쪽 메뉴 스타일 */
+    .right ul {
+        list-style: none;
+        padding: 0;
+        margin-right: 40px;
+        display: flex;
+    }
+
+    .right li {
+        margin-right: 20px; /* 각 메뉴 항목 사이의 간격 조정 */
+    }
+
+    .right a {
+        text-decoration: none;
+        color: black;
+        font-weight: bold;
+        transition: color 0.3s; /* color 속성에만 transition 추가 */
+    }
+
+    .right a:hover {
+        color: #333; /* 호버 효과 스타일 설정 */
+    }
+
+    /* 랭킹 섹션 컨테이너 스타일 */
+    .rankings {
+        display: flex;
+        justify-content: space-between; /* 양쪽 여백을 만들기 위해 */
+        margin-top: 75px;
+        margin-left: 60px;
+        margin-right: 60px;
+    }
+
+    /* 랭킹 섹션 스타일 */
+    .ranking-section {
+        flex: 1;
+        background: #fff;
+        border: 1px solid #ddd;
+        padding: 10px; /* 내부 패딩 */
+        background: #fcfcfc; /* 중립 베이지 배경색 설정 */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        margin-top: 20px;
+        margin-right: 20px; /* 간격 추가 */
+        border-radius: 10px; /* 모서리를 둥글게 만듭니다. */
+    }
+
+    /* 마지막 섹션의 오른쪽 마진 제거 */
+    .ranking-section:last-child {
+        margin-right: 0;
+    }
+
+    /* 랭킹 리스트 스타일 */
+    .ranking-list {
+        list-style-type: none; /* 목록 기호 제거 */
+        padding: 0;
+    }
+
+    /* 랭킹 리스트 아이템 스타일 */
+    .ranking-list li {
+        font-size: 1.2rem; /* 원하는 크기로 조정 */
+        margin: 10px 0; /* 위아래 여백 추가 */
+        position: relative; /* 상대적 위치 설정 */
+    }
+
+    /* 구분선 스타일 */
+    .ranking-list li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        width: 100%; /* 선의 너비를 항목의 전체 너비로 설정 */
+        border-top: 1px solid #ccc; /* 구분선 스타일 및 색상 설정 */
+    }
+
+    /* 상단 구분선 스타일 */
+    .ranking-list li::before {
+        top: -5px;
+    }
+
+    /* 하단 구분선 스타일 */
+    .ranking-list li:last-child::before{
+        bottom: 0;
+    }
+
+
+    /* 등수 스타일 */
+    .rank {
+        font-weight: bold;
+        color: black; /* 사용자 이름은 검은색으로 설정 */
+        position: absolute; /* 등수를 절대 위치로 설정 */
+        white-space: nowrap; /* 등수가 길어질 경우 줄 바꿈 방지 */
+    }
+
+    /* 1등, 2등, 3등 색상 설정 */
+    .gold {
+        color: gold; /* 1등의 숫자는 금색 */
+        left: 20px; /* 왼쪽에 고정 */
+        margin-right: 10px; /* 등수와 닉네임 사이의 오른쪽 여백 추가 */
+    }
+
+    .silver {
+        color: silver; /* 2등의 숫자는 은색 */
+        left: 20px; /* 왼쪽에 고정 */
+        margin-right: 10px; /* 등수와 닉네임 사이의 오른쪽 여백 추가 */
+    }
+
+    .bronze {
+        color: #cd7f32; /* 3등의 숫자는 동색 */
+        left: 20px; /* 왼쪽에 고정 */
+        margin-right: 10px; /* 등수와 닉네임 사이의 오른쪽 여백 추가 */
+    }
+
+    .change {
+        text-align: right;
+        right: 20px;
+    }
+
+    main {
+        padding-top: 10px;
+        padding-left: 60px;
+    }
+
+    .toRanking {
+        text-align: right;
+        font-weight: bold;
+        color: black;
+        margin-bottom: 20px;
+        margin-right: 60px;
+        margin-bottom: 60px;
+    }
+
+    .toRanking a {
+        text-decoration: none;
+        color: black;
+        transition: color 0.3s; /* color 속성에만 transition 추가 */
+    }
+
+    .toRanking a:hover {
+        color: #333; /* 호버 효과 스타일 설정 */
+    }
+
+    .context{
+        margin-top: 10px;
+        font-size: 18px;
+    }
+
+    .context li{
+        list-style-type: none;
+    }
+
+</style>
+
+<header>
+    <div class="left">
+        <a href="/home/">HI-ARC 이벤트 페이지</a>
+    </div>
+    <div class="right">
+        <ul>
+            <li><a href="/ranking/">랭킹</a></li>
+        </ul>
+    </div>
+</header>
+
+<section class="rankings">
+    <div class="ranking-section">
+        <h1>div.1</h1>
+        <ol class="ranking-list">
+            <li>
+                <span class="rank gold">1</span>
+                <font style="color:{{div1.0.color}};">{{div1.0.username}}</font>
+                <span class="rank change">+{{div1.0.change}}</span>
+            </li>
+            <li>
+                <span class="rank silver">2</span>
+                <font style="color:{{div1.1.color}};">{{div1.1.username}}</font>
+                <span class="rank change">+{{div1.1.change}}</span>
+            </li>
+            <li>
+                <span class="rank bronze">3</span>
+                <font style="color:{{div1.2.color}};">{{div1.2.username}}</font>
+                <span class="rank change">+{{div1.2.change}}</span>
+            </li>
+            <li>
+                <span class="rank bronze">4</span>
+                <font style="color:{{div1.3.color}};">{{div1.3.username}}</font>
+                <span class="rank change">+{{div1.3.change}}</span>
+            </li>
+            <li>
+                <span class="rank bronze">5</span>
+                <font style="color:{{div1.4.color}};">{{div1.4.username}}</font>
+                <span class="rank change">+{{div1.4.change}}</span>
+            </li>
+        </ol>
+    </div>
+    
+    <div class="ranking-section">
+        <h1>div.2</h1>
+        <ol class="ranking-list">
+            <li>
+                <span class="rank gold">1</span>
+                <font style="color:{{div2.0.color}};">{{div2.0.username}}</font>
+                <span class="rank change">+{{div2.0.change}}</span>
+            </li>
+            <li>
+                <span class="rank silver">2</span>
+                <font style="color:{{div2.1.color}};">{{div2.1.username}}</font>
+                <span class="rank change">+{{div2.1.change}}</span>
+            </li>
+            <li>
+                <span class="rank bronze">3</span>
+                <font style="color:{{div2.2.color}};">{{div2.2.username}}</font>
+                <span class="rank change">+{{div2.2.change}}</span>
+            </li>
+            <li>
+                <span class="rank bronze">4</span>
+                <font style="color:{{div2.3.color}};">{{div2.3.username}}</font>
+                <span class="rank change">+{{div2.3.change}}</span>
+            </li>
+            <li>
+                <span class="rank bronze">5</span>
+                <font style="color:{{div2.4.color}};">{{div2.4.username}}</font>
+                <span class="rank change">+{{div2.4.change}}</span>
+            </li>
+        </ol>
+    </div>
+
+    <div class="ranking-section">
+        <h1>div.3</h1>
+        <ol class="ranking-list">
+            <li>
+                <span class="rank gold">1</span>
+                <font style="color:{{div3.0.color}};">{{div3.0.username}}</font>
+                <span class="rank change">+{{div3.0.change}}</span>
+            </li>
+            <li>
+                <span class="rank silver">2</span>
+                <font style="color:{{div3.1.color}};">{{div3.1.username}}</font>
+                <span class="rank change">+{{div3.1.change}}</span>
+            </li>
+            <li>
+                <span class="rank bronze">3</span>
+                <font style="color:{{div3.2.color}};">{{div3.2.username}}</font>
+                <span class="rank change">+{{div3.2.change}}</span>
+            </li>
+            <li>
+                <span class="rank bronze">4</span>
+                <font style="color:{{div3.3.color}};">{{div3.3.username}}</font>
+                <span class="rank change">+{{div3.3.change}}</span>
+            </li>
+            <li>
+                <span class="rank bronze">5</span>
+                <font style="color:{{div3.4.color}};">{{div3.4.username}}</font>
+                <span class="rank change">+{{div3.4.change}}</span>
+            </li>
+        </ol>
+    </div>
+</section>
+
+<main>
+    <div class="toRanking">
+        <a href="/ranking/">전체 랭킹 보러 가기</a>
+    </div>
+
+    <h1>HI-ARC 레이팅 이벤트</h1>
+
+    <div class="context">
+        <li>solved.ac 레이팅을 가장 많이 올린 분께 선물을 드립니다!</li>
+        <li>매월 1일부터 한 달간 시즌이 진행되고, 시즌동안 레이팅의 변화량을 기준으로 랭킹이 결정됩니다.</li>
+    </div>
+</main>
+</html>
