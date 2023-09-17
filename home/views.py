@@ -2,7 +2,11 @@ from django.shortcuts import render, redirect
 from ranking.models import RatedUser
 import requests
 import math
+import time
 import random
+
+import ranking.cron
+import ranking.ValidHanles
 
 def killAllDB():
     Users = RatedUser.objects.all()
@@ -13,6 +17,7 @@ def killAllDB():
 def CreateDBbysolved():
     r = requests.get('https://solved.ac/api/v3/ranking/in_organization?page=1&organizationId=436')
     data = r.json()
+    validhandles = ranking.ValidHanles.Handles.split('\n')
     cnt = data['count']
     page = math.ceil(cnt/50)
     for i in range(1, page+1):
@@ -22,6 +27,9 @@ def CreateDBbysolved():
         for user in users:
             handle = user['handle']
             rating = user['rating']
+
+            if handle not in validhandles:
+                continue
 
             if (rating >= 1600): div = 1
             elif (rating >= 800): div = 2
@@ -35,7 +43,7 @@ def CreateDBbysolved():
             )
 
             #test code
-            newUser.seasonStartRating -= (random.randrange(0, rating+1)//100)
+            #newUser.seasonStartRating -= (random.randrange(0, rating+1)//100)
 
             try: newUser.save()
             except: pass
